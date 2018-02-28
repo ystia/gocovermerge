@@ -39,7 +39,10 @@ func concatProfiles(profilesPath []string) (*os.File, error) {
 			s := bufio.NewScanner(buf)
 			mode := ""
 			for s.Scan() {
-				line := s.Text()
+				line := strings.TrimSpace(s.Text())
+				if line == "" {
+					continue
+				}
 				if mode == "" {
 					const p = "mode: "
 					if !strings.HasPrefix(line, p) || line == p {
@@ -101,6 +104,7 @@ func main() {
 		flag.Usage()
 		os.Exit(1)
 	}
+	fmt.Printf("Merging profiles: %s\n", strings.Join(args, " "))
 	f, err := concatProfiles(args)
 	if f != nil && !*keepGenerated {
 		defer os.Remove(f.Name())
